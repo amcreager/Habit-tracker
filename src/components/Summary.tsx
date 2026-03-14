@@ -8,15 +8,20 @@ interface Props {
 export function Summary({ habits }: Props) {
   if (habits.length === 0) return null;
   const t = today();
-  const doneCount = habits.filter((h) => h.completions.includes(t)).length;
+  const doneCount = habits.filter(h => h.completions.includes(t)).length;
   const total = habits.length;
   const pct = Math.round((doneCount / total) * 100);
-  const longestStreak = Math.max(0, ...habits.map((h) => calcCurrentStreak(h.completions)));
+  const longestStreak = Math.max(
+    0,
+    ...habits.map(h => calcCurrentStreak(h.completions, h.frequency))
+  );
 
   return (
     <div className="summary">
       <div className="summary-card">
-        <span className="summary-value">{doneCount}/{total}</span>
+        <span className="summary-value">
+          {doneCount}/{total}
+        </span>
         <span className="summary-label">Done today</span>
       </div>
       <div className="summary-card">
@@ -25,7 +30,7 @@ export function Summary({ habits }: Props) {
       </div>
       <div className="summary-card">
         <span className="summary-value">🔥 {longestStreak}</span>
-        <span className="summary-label">Best streak now</span>
+        <span className="summary-label">Top streak</span>
       </div>
     </div>
   );
