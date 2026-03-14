@@ -613,9 +613,12 @@ input, select, textarea { font: inherit; color: var(--text-h); }
   .streak-num { font-size: 12px; }
   .emoji-grid { grid-template-columns: repeat(6, 1fr); }
 }
-@media (max-width: 390px) {
+@media (max-width: 430px) {
   .day-cell { width: 28px; height: 28px; border-radius: 7px; }
   .week-day-label { width: 28px; }
+  .habit-days { gap: 2px; }
+  .week-header-days { gap: 2px; }
   .habit-right { min-width: 60px; }
+  .week-header-right { width: 60px; }
   .habit-info { min-width: 0; }
 }
