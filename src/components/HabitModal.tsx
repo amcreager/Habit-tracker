@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { Habit, Category, Frequency } from '../types';
+import type { Habit, Category, Frequency, HabitTarget } from '../types';
 import type { HabitInput } from '../hooks/useHabits';
 import { HeatmapView } from './HeatmapView';
 
@@ -70,6 +70,8 @@ export function HabitModal({ habit, onSave, onDelete, onClose }: Props) {
     habit && typeof habit.frequency === 'object' && 'days' in habit.frequency
       ? habit.frequency.days : [0, 2, 4]
   );
+  const [targetType, setTargetType] = useState<HabitTarget['type']>(habit?.target?.type ?? 'check');
+  const [targetValue, setTargetValue] = useState(habit?.target?.value ? String(habit.target.value) : '');
   const [goalStreak, setGoalStreak] = useState(habit?.goalStreak ? String(habit.goalStreak) : '');
   const [reminder, setReminder] = useState(habit?.reminder ?? '');
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -93,6 +95,10 @@ export function HabitModal({ habit, onSave, onDelete, onClose }: Props) {
       category,
       color,
       frequency: buildFreq(freqMode, times, selectedDays),
+      target: {
+        type: targetType,
+        value: targetValue ? parseInt(targetValue) : undefined,
+      },
       goalStreak: goalStreak ? parseInt(goalStreak) : undefined,
       reminder: reminder || undefined,
     });
@@ -184,6 +190,40 @@ export function HabitModal({ habit, onSave, onDelete, onClose }: Props) {
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Target type */}
+            <div className="field">
+              <label>Track by</label>
+              <div className="freq-grid">
+                {([
+                  { type: 'check', label: '✓ Checkbox' },
+                  { type: 'count', label: '# Count' },
+                  { type: 'mins',  label: '⏱ Minutes' },
+                ] as { type: HabitTarget['type']; label: string }[]).map(opt => (
+                  <button
+                    key={opt.type}
+                    className={`freq-btn ${targetType === opt.type ? 'active' : ''}`}
+                    onClick={() => setTargetType(opt.type)}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              {targetType !== 'check' && (
+                <div className="log-input-row" style={{ marginTop: 8 }}>
+                  <input
+                    className="modal-input"
+                    type="number"
+                    min="1"
+                    placeholder={targetType === 'mins' ? 'e.g. 30' : 'e.g. 10'}
+                    value={targetValue}
+                    onChange={e => setTargetValue(e.target.value)}
+                    autoComplete="off"
+                  />
+                  <span className="log-unit">{targetType === 'mins' ? 'min / day' : '/ day'}</span>
+                </div>
+              )}
             </div>
 
             {/* Frequency */}

@@ -19,6 +19,7 @@ export default function App() {
     updateHabit,
     removeHabit,
     toggleCompletion,
+    logDay,
     setNote,
     reorderHabit,
   } = useHabits();
@@ -85,6 +86,7 @@ export default function App() {
                 habit={habit}
                 days={days}
                 onToggle={toggleCompletion}
+                onLog={logDay}
                 onEdit={setEditingHabit}
                 onNote={setNote}
                 onReorder={reorderHabit}

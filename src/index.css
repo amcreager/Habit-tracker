@@ -172,6 +172,15 @@ input, select, textarea { font: inherit; color: var(--text-h); }
 .day-cell:active { transform: scale(.9); }
 .day-cell.day-today:not(.day-done) { border-color: var(--accent); }
 .day-cell.day-done { border-color: transparent; }
+.day-cell.day-partial {
+  background: linear-gradient(
+    to top,
+    var(--cell-color, #6366f1) calc(var(--progress, 0) * 100%),
+    var(--border) calc(var(--progress, 0) * 100%)
+  );
+  border-color: transparent;
+}
+.day-value { font-size: 10px; font-weight: 800; color: white; line-height: 1; }
 
 .today-dot {
   width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
@@ -405,6 +414,24 @@ input, select, textarea { font: inherit; color: var(--text-h); }
   box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--accent);
   transform: scale(1.12);
 }
+
+/* ── Log modal ────────────────────────────────────────── */
+.log-progress-wrap { display: flex; flex-direction: column; gap: 6px; }
+.log-progress-bar { height: 10px; border-radius: 6px; background: var(--border); overflow: hidden; }
+.log-progress-fill { height: 100%; border-radius: 6px; transition: width .3s ease; }
+.log-progress-label { font-size: 13px; font-weight: 700; color: var(--text-h); text-align: center; }
+
+.log-presets { display: flex; flex-wrap: wrap; gap: 8px; }
+.log-preset-btn {
+  padding: 9px 14px; border-radius: 10px; font-size: 14px; font-weight: 700;
+  border: 1.5px solid var(--border); background: var(--surface2); color: var(--text);
+  transition: all .15s; min-width: 52px; text-align: center;
+}
+.log-preset-btn:active { transform: scale(.93); }
+
+.log-input-row { display: flex; align-items: center; gap: 8px; }
+.log-input-row .modal-input { flex: 1; }
+.log-unit { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; }
 
 /* ── Frequency picker ─────────────────────────────────── */
 .freq-grid {

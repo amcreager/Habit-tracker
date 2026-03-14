@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { Habit, Category, Frequency } from '../types';
+import type { Habit, Category, Frequency, HabitTarget } from '../types';
 import { today } from '../utils/dates';
 
 const STORAGE_KEY = 'habit-tracker-v2';
@@ -16,6 +16,7 @@ export interface HabitInput {
   color: string;
   category: Category;
   frequency: Frequency;
+  target: HabitTarget;
   reminder?: string;
   goalStreak?: number;
 }
@@ -28,10 +29,12 @@ function migrateHabit(raw: Record<string, unknown>, index: number): Habit {
     color: (raw.color as string) ?? COLORS[index % COLORS.length],
     category: (raw.category as Category) ?? 'personal',
     frequency: (raw.frequency as Frequency) ?? 'daily',
+    target: (raw.target as HabitTarget) ?? { type: 'check' },
     reminder: raw.reminder as string | undefined,
     goalStreak: raw.goalStreak as number | undefined,
     createdAt: (raw.createdAt as string) ?? today(),
     completions: (raw.completions as string[]) ?? [],
+    logs: (raw.logs as Habit['logs']) ?? [],
     notes: (raw.notes as Habit['notes']) ?? [],
     order: typeof raw.order === 'number' ? raw.order : index,
   };
@@ -57,9 +60,7 @@ function save(habits: Habit[]) {
 export function useHabits() {
   const [habits, setHabits] = useState<Habit[]>(load);
 
-  useEffect(() => {
-    save(habits);
-  }, [habits]);
+  useEffect(() => { save(habits); }, [habits]);
 
   function addHabit(input: HabitInput) {
     const habit: Habit = {
@@ -67,6 +68,7 @@ export function useHabits() {
       ...input,
       createdAt: today(),
       completions: [],
+      logs: [],
       notes: [],
       order: habits.length,
     };
@@ -74,16 +76,12 @@ export function useHabits() {
   }
 
   function updateHabit(id: string, updates: Partial<HabitInput>) {
-    setHabits(prev =>
-      prev.map(h => (h.id === id ? { ...h, ...updates } : h))
-    );
+    setHabits(prev => prev.map(h => (h.id === id ? { ...h, ...updates } : h)));
   }
 
   function removeHabit(id: string) {
     setHabits(prev =>
-      prev
-        .filter(h => h.id !== id)
-        .map((h, i) => ({ ...h, order: i }))
+      prev.filter(h => h.id !== id).map((h, i) => ({ ...h, order: i }))
     );
   }
 
@@ -98,6 +96,17 @@ export function useHabits() {
             ? h.completions.filter(d => d !== date)
             : [...h.completions, date],
         };
+      })
+    );
+  }
+
+  function logDay(id: string, date: string, value: number) {
+    setHabits(prev =>
+      prev.map(h => {
+        if (h.id !== id) return h;
+        const logs = h.logs.filter(l => l.date !== date);
+        if (value > 0) logs.push({ date, value });
+        return { ...h, logs };
       })
     );
   }
@@ -127,11 +136,8 @@ export function useHabits() {
   const sorted = [...habits].sort((a, b) => a.order - b.order);
   return {
     habits: sorted,
-    addHabit,
-    updateHabit,
-    removeHabit,
-    toggleCompletion,
-    setNote,
-    reorderHabit,
+    addHabit, updateHabit, removeHabit,
+    toggleCompletion, logDay,
+    setNote, reorderHabit,
   };
 }

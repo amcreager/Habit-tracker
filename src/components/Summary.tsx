@@ -1,5 +1,6 @@
 import type { Habit } from '../types';
 import { today, calcCurrentStreak } from '../utils/dates';
+import { completedDays } from '../utils/habit';
 
 interface Props {
   habits: Habit[];
@@ -8,12 +9,12 @@ interface Props {
 export function Summary({ habits }: Props) {
   if (habits.length === 0) return null;
   const t = today();
-  const doneCount = habits.filter(h => h.completions.includes(t)).length;
+  const doneCount = habits.filter(h => completedDays(h).includes(t)).length;
   const total = habits.length;
   const pct = Math.round((doneCount / total) * 100);
   const longestStreak = Math.max(
     0,
-    ...habits.map(h => calcCurrentStreak(h.completions, h.frequency))
+    ...habits.map(h => calcCurrentStreak(completedDays(h), h.frequency))
   );
 
   return (

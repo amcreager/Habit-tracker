@@ -1,5 +1,6 @@
 import type { Habit } from '../types';
 import { today, addDays, getWeekStart, formatDate } from '../utils/dates';
+import { completedDays } from '../utils/habit';
 
 const WEEKS = 16;
 const DAY_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
@@ -9,7 +10,7 @@ interface Props {
 }
 
 export function HeatmapView({ habit }: Props) {
-  const set = new Set(habit.completions);
+  const set = new Set(completedDays(habit));
   const t = today();
   const startMonday = getWeekStart(addDays(t, -(WEEKS - 1) * 7));
 
@@ -17,7 +18,7 @@ export function HeatmapView({ habit }: Props) {
     Array.from({ length: 7 }, (_, d) => addDays(startMonday, w * 7 + d))
   );
 
-  const totalDone = habit.completions.length;
+  const totalDone = completedDays(habit).length;
   const last30 = Array.from({ length: 30 }, (_, i) =>
     addDays(t, i - 29)
   ).filter(d => set.has(d)).length;
