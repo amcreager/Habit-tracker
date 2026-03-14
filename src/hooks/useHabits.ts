@@ -12,6 +12,7 @@ const COLORS = [
 
 export interface HabitInput {
   name: string;
+  icon: string;
   color: string;
   category: Category;
   frequency: Frequency;
@@ -23,6 +24,7 @@ function migrateHabit(raw: Record<string, unknown>, index: number): Habit {
   return {
     id: raw.id as string,
     name: raw.name as string,
+    icon: (raw.icon as string) ?? '⭐',
     color: (raw.color as string) ?? COLORS[index % COLORS.length],
     category: (raw.category as Category) ?? 'personal',
     frequency: (raw.frequency as Frequency) ?? 'daily',

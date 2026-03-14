@@ -17,6 +17,7 @@ export interface DayNote {
 export interface Habit {
   id: string;
   name: string;
+  icon: string;
   color: string;
   category: Category;
   frequency: Frequency;
