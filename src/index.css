@@ -55,7 +55,7 @@ input, select, textarea { font: inherit; color: var(--text-h); }
 .title { font-size: 22px; font-weight: 800; color: var(--text-h); letter-spacing: -.5px; }
 .subtitle { font-size: 12px; color: var(--text); font-weight: 500; }
 
-.main { max-width: 960px; margin: 0 auto; padding: 16px 16px calc(80px + env(safe-area-inset-bottom)); width: 100%; }
+.main { max-width: 960px; margin: 0 auto; padding: 16px 16px calc(80px + 56px + env(safe-area-inset-bottom)); width: 100%; }
 
 /* ── Category filter ──────────────────────────────────── */
 .category-filter {
@@ -521,6 +521,102 @@ input, select, textarea { font: inherit; color: var(--text-h); }
   font-size: 14px; font-weight: 600; transition: background .15s;
 }
 .btn-danger:hover { background: #fee2e2; }
+
+/* ── Tab bar ──────────────────────────────────────────── */
+.tab-bar {
+  display: flex; background: var(--surface);
+  border-top: 1px solid var(--border);
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 9;
+  box-shadow: 0 -1px 0 var(--border);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.tab-btn {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  gap: 2px; padding: 10px 8px;
+  color: var(--text); transition: color .15s;
+  font-size: 11px; font-weight: 600;
+}
+.tab-btn.active { color: var(--accent); }
+.tab-icon { font-size: 20px; line-height: 1; }
+.tab-label { font-size: 11px; font-weight: 600; }
+
+/* ── Monthly review ───────────────────────────────────── */
+.monthly-review { display: flex; flex-direction: column; gap: 16px; }
+
+.monthly-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 4px 0;
+}
+.monthly-nav-label { font-size: 17px; font-weight: 800; color: var(--text-h); }
+.monthly-nav-btn {
+  font-size: 24px; width: 40px; height: 40px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent); background: var(--accent-light);
+  transition: opacity .15s;
+}
+.monthly-nav-btn:disabled { opacity: .3; }
+
+.monthly-stats { display: flex; gap: 10px; }
+.monthly-stat-card {
+  flex: 1; background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 10px; text-align: center;
+  box-shadow: var(--shadow);
+}
+.monthly-stat-value { display: block; font-size: 24px; font-weight: 800; color: var(--text-h); line-height: 1.1; }
+.monthly-stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--text); font-weight: 600; }
+
+.monthly-calendar {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+}
+
+.monthly-dow-row {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  background: var(--surface2); border-bottom: 1px solid var(--border);
+}
+.monthly-dow {
+  text-align: center; font-size: 10px; font-weight: 700;
+  color: var(--text); text-transform: uppercase; letter-spacing: .4px;
+  padding: 8px 2px;
+}
+
+.monthly-week-row {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  border-bottom: 1px solid var(--border);
+}
+.monthly-week-row:last-child { border-bottom: none; }
+
+.monthly-day-cell {
+  position: relative; min-height: 52px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; border-right: 1px solid var(--border); padding: 4px 2px;
+}
+.monthly-day-cell:last-child { border-right: none; }
+.monthly-day-cell.empty { background: var(--surface2); }
+.monthly-day-cell.future { opacity: .4; }
+.monthly-day-cell.today .monthly-day-num {
+  color: var(--accent); font-weight: 800;
+}
+
+.monthly-day-fill {
+  position: absolute; inset: 0; pointer-events: none;
+  border-radius: 0;
+}
+.monthly-day-num {
+  position: relative; font-size: 13px; font-weight: 600; color: var(--text-h);
+  z-index: 1;
+}
+.monthly-day-pct {
+  position: relative; font-size: 10px; font-weight: 700; color: var(--text-h);
+  z-index: 1; opacity: .85;
+}
+
+.monthly-legend {
+  display: flex; gap: 12px; justify-content: center;
+  padding: 4px 0; flex-wrap: wrap;
+}
+.monthly-legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text); }
+.monthly-legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
 
 /* ── Responsive ───────────────────────────────────────── */
 @media (max-width: 480px) {
