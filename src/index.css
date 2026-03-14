@@ -45,6 +45,7 @@ input, select, textarea { font: inherit; color: var(--text-h); }
   border-bottom: 1px solid var(--border);
   position: sticky; top: 0; z-index: 10;
   box-shadow: var(--shadow);
+  padding-top: env(safe-area-inset-top);
 }
 .header-inner {
   max-width: 960px; margin: 0 auto;
@@ -54,7 +55,7 @@ input, select, textarea { font: inherit; color: var(--text-h); }
 .title { font-size: 22px; font-weight: 800; color: var(--text-h); letter-spacing: -.5px; }
 .subtitle { font-size: 12px; color: var(--text); font-weight: 500; }
 
-.main { max-width: 960px; margin: 0 auto; padding: 16px 16px 80px; width: 100%; }
+.main { max-width: 960px; margin: 0 auto; padding: 16px 16px calc(80px + env(safe-area-inset-bottom)); width: 100%; }
 
 /* ── Category filter ──────────────────────────────────── */
 .category-filter {
@@ -270,10 +271,28 @@ input, select, textarea { font: inherit; color: var(--text-h); }
 .add-btn:active { transform: scale(.96); }
 
 /* ── Empty state ──────────────────────────────────────── */
-.empty { text-align: center; padding: 64px 20px; color: var(--text); }
-.empty-icon { font-size: 52px; margin-bottom: 16px; }
-.empty h2 { color: var(--text-h); margin-bottom: 8px; font-size: 20px; font-weight: 700; }
-.empty p { font-size: 14px; }
+.empty {
+  text-align: center; padding: 48px 24px 64px; color: var(--text);
+  display: flex; flex-direction: column; align-items: center;
+}
+.empty-icon-wrap {
+  width: 100px; height: 100px; border-radius: 32px;
+  background: var(--accent-light); display: flex; align-items: center; justify-content: center;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(99,102,241,.18);
+}
+.empty-icon { font-size: 52px; }
+.empty h2 { color: var(--text-h); margin-bottom: 10px; font-size: 22px; font-weight: 800; }
+.empty p { font-size: 15px; max-width: 260px; line-height: 1.6; }
+.empty-cta {
+  margin-top: 28px;
+  background: var(--accent); color: white;
+  padding: 14px 28px; border-radius: 14px;
+  font-size: 16px; font-weight: 700;
+  box-shadow: 0 4px 16px rgba(99,102,241,.4);
+  transition: all .15s;
+}
+.empty-cta:active { transform: scale(.96); }
 
 .legend { margin-top: 16px; text-align: center; font-size: 12px; color: var(--text); }
 

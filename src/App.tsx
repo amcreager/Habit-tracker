@@ -65,17 +65,26 @@ export default function App() {
 
         {filtered.length === 0 ? (
           <div className="empty">
-            <div className="empty-icon">📋</div>
+            <div className="empty-icon-wrap">
+              <span className="empty-icon">
+                {habits.length === 0 ? '✨' : '🔍'}
+              </span>
+            </div>
             <h2>
               {habits.length === 0
-                ? 'No habits yet'
-                : 'No habits in this category'}
+                ? 'Start your streak today'
+                : 'No habits here'}
             </h2>
             <p>
               {habits.length === 0
-                ? 'Tap "+ Add Habit" to start tracking your progress.'
+                ? 'Build better habits one day at a time. Add your first habit to begin.'
                 : 'Try a different category or add a new habit.'}
             </p>
+            {habits.length === 0 && (
+              <button className="empty-cta" onClick={() => setEditingHabit('new')}>
+                + Add your first habit
+              </button>
+            )}
           </div>
         ) : (
           <div className="habit-list">
