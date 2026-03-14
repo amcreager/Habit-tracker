@@ -6,6 +6,7 @@ import { WeekHeader } from './components/WeekHeader';
 import { Summary } from './components/Summary';
 import { HabitModal } from './components/HabitModal';
 import { CategoryFilter } from './components/CategoryFilter';
+import { MonthlyReview } from './components/MonthlyReview';
 import { getLast7Days, formatDate, today } from './utils/dates';
 import type { Habit, Category } from './types';
 import type { HabitInput } from './hooks/useHabits';
@@ -28,6 +29,7 @@ export default function App() {
 
   const [editingHabit, setEditingHabit] = useState<Habit | 'new' | null>(null);
   const [filterCat, setFilterCat] = useState<Category | 'all'>('all');
+  const [activeView, setActiveView] = useState<'today' | 'review'>('today');
 
   const filtered =
     filterCat === 'all' ? habits : habits.filter(h => h.category === filterCat);
@@ -53,53 +55,71 @@ export default function App() {
             + Add Habit
           </button>
         </div>
-        <CategoryFilter
-          selected={filterCat}
-          onChange={setFilterCat}
-          habits={habits}
-        />
+        <div className="view-tabs">
+          <button
+            className={activeView === 'today' ? 'active' : ''}
+            onClick={() => setActiveView('today')}
+          >Today</button>
+          <button
+            className={activeView === 'review' ? 'active' : ''}
+            onClick={() => setActiveView('review')}
+          >📅 Monthly Review</button>
+        </div>
+        {activeView === 'today' && (
+          <CategoryFilter
+            selected={filterCat}
+            onChange={setFilterCat}
+            habits={habits}
+          />
+        )}
       </header>
 
       <main className="main">
-        <Summary habits={filtered} />
-
-        {filtered.length === 0 ? (
-          <div className="empty">
-            <div className="empty-icon">📋</div>
-            <h2>
-              {habits.length === 0
-                ? 'No habits yet'
-                : 'No habits in this category'}
-            </h2>
-            <p>
-              {habits.length === 0
-                ? 'Tap "+ Add Habit" to start tracking your progress.'
-                : 'Try a different category or add a new habit.'}
-            </p>
-          </div>
+        {activeView === 'review' ? (
+          <MonthlyReview habits={habits} />
         ) : (
-          <div className="habit-list">
-            <WeekHeader days={days} />
-            {filtered.map((habit, i) => (
-              <HabitRow
-                key={habit.id}
-                habit={habit}
-                days={days}
-                onToggle={toggleCompletion}
-                onLog={logDay}
-                onEdit={setEditingHabit}
-                onNote={setNote}
-                onReorder={reorderHabit}
-                isFirst={i === 0}
-                isLast={i === filtered.length - 1}
-              />
-            ))}
-          </div>
-        )}
+          <>
+            <Summary habits={filtered} />
 
-        <div className="legend">
-          <span>Tap a day to check off &middot; 📝 to add a note &middot; ▼ for history</span>
-        </div>
+            {filtered.length === 0 ? (
+              <div className="empty">
+                <div className="empty-icon">📋</div>
+                <h2>
+                  {habits.length === 0
+                    ? 'No habits yet'
+                    : 'No habits in this category'}
+                </h2>
+                <p>
+                  {habits.length === 0
+                    ? 'Tap "+ Add Habit" to start tracking your progress.'
+                    : 'Try a different category or add a new habit.'}
+                </p>
+              </div>
+            ) : (
+              <div className="habit-list">
+                <WeekHeader days={days} />
+                {filtered.map((habit, i) => (
+                  <HabitRow
+                    key={habit.id}
+                    habit={habit}
+                    days={days}
+                    onToggle={toggleCompletion}
+                    onLog={logDay}
+                    onEdit={setEditingHabit}
+                    onNote={setNote}
+                    onReorder={reorderHabit}
+                    isFirst={i === 0}
+                    isLast={i === filtered.length - 1}
+                  />
+                ))}
+              </div>
+            )}
+
+            <div className="legend">
+              <span>Tap a day to check off &middot; 📝 to add a note &middot; ▼ for history</span>
+            </div>
+          </>
+        )}
       </main>
 
       {editingHabit && (
