@@ -7,7 +7,8 @@ export type Category =
   | 'personal'
   | 'other';
 
-export type Frequency = 'daily' | 'weekdays' | 'weekends' | { times: number };
+/** days: Mon=0 … Sun=6 */
+export type Frequency = 'daily' | 'weekdays' | 'weekends' | { times: number } | { days: number[] };
 
 export interface DayNote {
   date: string; // YYYY-MM-DD

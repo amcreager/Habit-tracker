@@ -7,9 +7,7 @@ export function today(): string {
 export function formatDate(date: string): string {
   const [y, m, d] = date.split('-').map(Number);
   return new Date(y, m - 1, d).toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
+    weekday: 'short', month: 'short', day: 'numeric',
   });
 }
 
@@ -33,40 +31,37 @@ export function getWeekStart(date: string): string {
   return addDays(date, -getDow(date));
 }
 
-export function isWeekday(date: string): boolean {
-  return getDow(date) < 5;
-}
+export function isWeekday(date: string): boolean { return getDow(date) < 5; }
+export function isWeekend(date: string): boolean { return getDow(date) >= 5; }
 
-export function isWeekend(date: string): boolean {
-  return getDow(date) >= 5;
+function isSpecificDays(freq: Frequency): freq is { days: number[] } {
+  return typeof freq === 'object' && 'days' in freq;
+}
+function isTimesPerWeek(freq: Frequency): freq is { times: number } {
+  return typeof freq === 'object' && 'times' in freq;
 }
 
 export function isExpectedDay(date: string, freq: Frequency): boolean {
-  if (typeof freq === 'object') return true;
   if (freq === 'daily') return true;
   if (freq === 'weekdays') return isWeekday(date);
   if (freq === 'weekends') return isWeekend(date);
+  if (isSpecificDays(freq)) return freq.days.includes(getDow(date));
+  if (isTimesPerWeek(freq)) return true; // all days eligible
   return true;
 }
 
 export function calcCurrentStreak(completions: string[], frequency: Frequency): number {
-  if (typeof frequency === 'object') {
+  if (isTimesPerWeek(frequency)) {
     return calcTimesPerWeekStreak(completions, frequency.times);
   }
   const set = new Set(completions);
   let cursor = today();
+  // Rewind to last expected day
   let back = 0;
-  while (!isExpectedDay(cursor, frequency) && back < 7) {
-    cursor = addDays(cursor, -1);
-    back++;
-  }
+  while (!isExpectedDay(cursor, frequency) && back < 7) { cursor = addDays(cursor, -1); back++; }
   if (!set.has(cursor)) {
-    cursor = addDays(cursor, -1);
-    back = 0;
-    while (!isExpectedDay(cursor, frequency) && back < 7) {
-      cursor = addDays(cursor, -1);
-      back++;
-    }
+    cursor = addDays(cursor, -1); back = 0;
+    while (!isExpectedDay(cursor, frequency) && back < 7) { cursor = addDays(cursor, -1); back++; }
   }
   let streak = 0;
   for (let i = 0; i < 366; i++) {
@@ -90,12 +85,8 @@ function calcTimesPerWeekStreak(completions: string[], times: number): number {
     if (done >= times) {
       streak++;
     } else if (firstWeek) {
-      weekStart = addDays(weekStart, -7);
-      firstWeek = false;
-      continue;
-    } else {
-      break;
-    }
+      weekStart = addDays(weekStart, -7); firstWeek = false; continue;
+    } else { break; }
     firstWeek = false;
     weekStart = addDays(weekStart, -7);
   }
@@ -104,7 +95,7 @@ function calcTimesPerWeekStreak(completions: string[], times: number): number {
 
 export function calcBestStreak(completions: string[], frequency: Frequency): number {
   if (completions.length === 0) return 0;
-  if (typeof frequency === 'object') {
+  if (isTimesPerWeek(frequency)) {
     const set = new Set(completions);
     const sorted = [...completions].sort();
     if (!sorted.length) return 0;
@@ -136,13 +127,20 @@ export function calcBestStreak(completions: string[], frequency: Frequency): num
   return best;
 }
 
+const DAY_ABBR = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
 export function formatFrequency(freq: Frequency): string {
   if (freq === 'daily') return 'Daily';
   if (freq === 'weekdays') return 'Weekdays';
   if (freq === 'weekends') return 'Weekends';
-  return `${(freq as { times: number }).times}× /wk`;
+  if (isSpecificDays(freq)) {
+    if (freq.days.length === 0) return 'No days set';
+    return freq.days.slice().sort((a, b) => a - b).map(d => DAY_ABBR[d]).join(', ');
+  }
+  if (isTimesPerWeek(freq)) return `${freq.times}× /wk`;
+  return 'Custom';
 }
 
 export function streakLabel(freq: Frequency): string {
-  return typeof freq === 'object' ? 'wk' : 'd';
+  return isTimesPerWeek(freq) ? 'wk' : 'd';
 }
