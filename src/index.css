@@ -5,7 +5,7 @@
   --surface: #ffffff;
   --surface2: #f8fafc;
   --border: #e2e8f0;
-  --text: #64748b;
+  --text: #475569;
   --text-h: #0f172a;
   --accent: #6366f1;
   --accent-light: #eef2ff;
@@ -26,7 +26,7 @@
     --surface: #1e293b;
     --surface2: #162032;
     --border: #2d3f55;
-    --text: #94a3b8;
+    --text: #b0bec5;
     --text-h: #f1f5f9;
     --accent: #818cf8;
     --accent-light: #1e1b4b;
@@ -159,7 +159,17 @@ input, select, textarea { font: inherit; color: var(--text-h); }
 
 /* Day grid */
 .habit-days { display: flex; gap: 4px; }
-.day-col { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.day-col { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.day-col-name {
+  font-size: 10px; text-transform: uppercase; letter-spacing: .4px;
+  color: var(--text); font-weight: 700; line-height: 1;
+}
+.day-col-num {
+  font-size: 12px; font-weight: 700; color: var(--text-h); line-height: 1;
+  margin-bottom: 2px;
+}
+.day-col.is-today .day-col-name,
+.day-col.is-today .day-col-num { color: var(--accent); }
 .is-today .day-cell:not(.day-done) { box-shadow: 0 0 0 2px var(--accent); }
 
 .day-cell {
@@ -199,7 +209,7 @@ input, select, textarea { font: inherit; color: var(--text-h); }
 /* Note button */
 .note-btn {
   font-size: 11px; height: 14px; line-height: 14px;
-  color: var(--text); opacity: .5; transition: opacity .15s;
+  color: var(--text); opacity: .7; transition: opacity .15s;
   padding: 0 2px;
 }
 .note-btn:hover, .note-btn.has-note { opacity: 1; font-size: 13px; }
@@ -506,16 +516,16 @@ input, select, textarea { font: inherit; color: var(--text-h); }
 
 /* ── Responsive ───────────────────────────────────────── */
 @media (max-width: 640px) {
-  .week-header-right { width: 84px; }
   .habit-right { min-width: 84px; }
   .day-cell { width: 34px; height: 34px; }
-  .week-day-label { width: 34px; }
+  .day-col-name, .day-col-num { font-size: 9px; }
 }
 @media (max-width: 480px) {
   .habit-row { padding: 8px 8px 8px 10px; gap: 6px; }
   .habit-icon { width: 36px; height: 36px; font-size: 18px; border-radius: 10px; }
   .day-cell { width: 30px; height: 30px; border-radius: 8px; }
-  .week-day-label { width: 30px; }
+  .day-col-name { font-size: 8px; }
+  .day-col-num { font-size: 10px; }
   .check { font-size: 14px; }
   .habit-right { min-width: 78px; }
   .streak-chip { padding: 2px 5px; }

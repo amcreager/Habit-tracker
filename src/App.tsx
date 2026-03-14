@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useHabits } from './hooks/useHabits';
 import { useReminders } from './hooks/useReminders';
 import { HabitRow } from './components/HabitRow';
-import { WeekHeader } from './components/WeekHeader';
 import { Summary } from './components/Summary';
 import { HabitModal } from './components/HabitModal';
 import { CategoryFilter } from './components/CategoryFilter';
@@ -79,7 +78,6 @@ export default function App() {
           </div>
         ) : (
           <div className="habit-list">
-            <WeekHeader days={days} />
             {filtered.map((habit, i) => (
               <HabitRow
                 key={habit.id}

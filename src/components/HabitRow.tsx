@@ -92,9 +92,13 @@ export function HabitRow({
             const progress = isTracked ? dayProgress(habit, day) : 0;
             const logVal = isTracked ? dayLogValue(habit, day) : 0;
             const isMins = habit.target.type === 'mins';
+            const dayLabel = new Date(day + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short' });
+            const dayNum = parseInt(day.slice(8));
 
             return (
               <div key={day} className={`day-col ${isToday ? 'is-today' : ''}`}>
+                <span className="day-col-name">{dayLabel}</span>
+                <span className="day-col-num">{dayNum}</span>
                 <button
                   className={`day-cell
                     ${done ? 'day-done' : ''}
