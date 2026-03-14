@@ -54,35 +54,58 @@ export function HabitRow({
   return (
     <>
       <div className={`habit-row ${doneToday ? 'done-today' : ''}`}>
-        {/* Icon */}
-        <button
-          className="habit-icon"
-          style={{ background: habit.color }}
-          onClick={() => onEdit(habit)}
-          title="Edit habit"
-        >
-          {habit.icon}
-        </button>
+        {/* Top: icon + name + streaks + actions */}
+        <div className="habit-row-top">
+          <button
+            className="habit-icon"
+            style={{ background: habit.color }}
+            onClick={() => onEdit(habit)}
+            title="Edit habit"
+          >
+            {habit.icon}
+          </button>
 
-        {/* Name + meta */}
-        <div className="habit-info">
-          <span className="habit-name">{habit.name}</span>
-          <span className="habit-meta">
-            {formatFrequency(habit.frequency)}
-            {formatTarget(habit) && ` · ${formatTarget(habit)}`}
-            {habit.reminder && ` · ⏰ ${habit.reminder}`}
-          </span>
-          {goalPct !== null && (
-            <div className="goal-bar-wrap" title={`Goal: ${habit.goalStreak}${unit}`}>
-              <div className="goal-bar">
-                <div className="goal-fill" style={{ width: `${goalPct}%`, background: habit.color }} />
+          <div className="habit-info">
+            <span className="habit-name">{habit.name}</span>
+            <span className="habit-meta">
+              {formatFrequency(habit.frequency)}
+              {formatTarget(habit) && ` · ${formatTarget(habit)}`}
+              {habit.reminder && ` · ⏰ ${habit.reminder}`}
+            </span>
+            {goalPct !== null && (
+              <div className="goal-bar-wrap" title={`Goal: ${habit.goalStreak}${unit}`}>
+                <div className="goal-bar">
+                  <div className="goal-fill" style={{ width: `${goalPct}%`, background: habit.color }} />
+                </div>
+                <span className="goal-pct">{goalPct}%</span>
               </div>
-              <span className="goal-pct">{goalPct}%</span>
+            )}
+          </div>
+
+          <div className="habit-right">
+            <div className="habit-streaks">
+              <div className="streak-chip" title="Current streak">
+                <span className="streak-fire">🔥</span>
+                <span className="streak-num">{currentStreak}</span>
+              </div>
+              <div className="streak-chip best" title="Best streak">
+                <span className="streak-fire">⭐</span>
+                <span className="streak-num">{bestStreak}</span>
+              </div>
             </div>
-          )}
+            <div className="habit-actions">
+              <button className="action-btn" onClick={() => setExpanded(e => !e)} title="History">
+                {expanded ? '▲' : '▼'}
+              </button>
+              <div className="reorder-btns">
+                <button className="action-btn" onClick={() => onReorder(habit.id, 'up')} disabled={isFirst} title="Move up">↑</button>
+                <button className="action-btn" onClick={() => onReorder(habit.id, 'down')} disabled={isLast} title="Move down">↓</button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* 7-day grid */}
+        {/* Bottom: full-width day cells */}
         <div className="habit-days">
           {days.map(day => {
             const done = doneDays.includes(day);
@@ -133,31 +156,6 @@ export function HabitRow({
               </div>
             );
           })}
-        </div>
-
-        {/* Streaks + actions */}
-        <div className="habit-right">
-          <div className="habit-streaks">
-            <div className="streak-chip" title="Current streak">
-              <span className="streak-fire">🔥</span>
-              <span className="streak-num">{currentStreak}</span>
-              <span className="streak-unit">{unit}</span>
-            </div>
-            <div className="streak-chip best" title="Best streak">
-              <span className="streak-fire">⭐</span>
-              <span className="streak-num">{bestStreak}</span>
-              <span className="streak-unit">{unit}</span>
-            </div>
-          </div>
-          <div className="habit-actions">
-            <button className="action-btn" onClick={() => setExpanded(e => !e)} title="History">
-              {expanded ? '▲' : '▼'}
-            </button>
-            <div className="reorder-btns">
-              <button className="action-btn" onClick={() => onReorder(habit.id, 'up')} disabled={isFirst} title="Move up">↑</button>
-              <button className="action-btn" onClick={() => onReorder(habit.id, 'down')} disabled={isLast} title="Move down">↓</button>
-            </div>
-          </div>
         </div>
       </div>
 
