@@ -134,7 +134,6 @@ export function HabitModal({ habit, onSave, onDelete, onClose }: Props) {
                 {icon}
               </button>
               <input
-                autoFocus
                 className="modal-input hero-input"
                 value={name}
                 onChange={e => setName(e.target.value)}
