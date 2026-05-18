@@ -1,11 +1,14 @@
-const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string
-const REDIRECT_URI = import.meta.env.VITE_GOOGLE_REDIRECT_URI as string
+const CLIENT_ID = '282107699004-c0tj01bup6kfep89al9hhjqf33m3canm.apps.googleusercontent.com'
 
 const SCOPES = [
   'https://www.googleapis.com/auth/fitness.activity.read',
   'https://www.googleapis.com/auth/fitness.heart_rate.read',
   'https://www.googleapis.com/auth/spreadsheets',
 ].join(' ')
+
+function getRedirectUri(): string {
+  return `${window.location.origin}/auth/callback`
+}
 
 function base64URLEncode(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer)
@@ -15,7 +18,9 @@ function base64URLEncode(buffer: ArrayBuffer): string {
 }
 
 export async function buildAuthUrl(): Promise<string> {
-  const verifier = base64URLEncode(crypto.getRandomValues(new Uint8Array(32)).buffer as ArrayBuffer)
+  const verifierBytes = new Uint8Array(32)
+  crypto.getRandomValues(verifierBytes)
+  const verifier = base64URLEncode(verifierBytes.buffer as ArrayBuffer)
   const challenge = base64URLEncode(
     await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier)),
   )
@@ -24,7 +29,7 @@ export async function buildAuthUrl(): Promise<string> {
 
   const params = new URLSearchParams({
     client_id: CLIENT_ID,
-    redirect_uri: REDIRECT_URI,
+    redirect_uri: getRedirectUri(),
     response_type: 'code',
     scope: SCOPES,
     code_challenge: challenge,
@@ -42,4 +47,8 @@ export function getCodeVerifier(): string | null {
 
 export function clearCodeVerifier(): void {
   sessionStorage.removeItem('pkce_verifier')
+}
+
+export function getRedirectUriForServer(): string {
+  return getRedirectUri()
 }

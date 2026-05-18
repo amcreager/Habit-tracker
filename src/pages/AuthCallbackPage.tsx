@@ -26,7 +26,7 @@ export default function AuthCallbackPage() {
     fetch('/api/auth/callback', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, code_verifier: verifier }),
+      body: JSON.stringify({ code, code_verifier: verifier, redirect_uri: `${window.location.origin}/auth/callback` }),
     })
       .then((res) => {
         if (!res.ok) return Promise.reject(new Error(`Server error: ${res.status}`))

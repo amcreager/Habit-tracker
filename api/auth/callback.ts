@@ -5,19 +5,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { code, code_verifier } = req.body as { code?: string; code_verifier?: string }
+  const { code, code_verifier, redirect_uri } = req.body as {
+    code?: string
+    code_verifier?: string
+    redirect_uri?: string
+  }
 
-  if (!code || !code_verifier) {
-    return res.status(400).json({ error: 'Missing code or code_verifier' })
+  if (!code || !code_verifier || !redirect_uri) {
+    return res.status(400).json({ error: 'Missing code, code_verifier, or redirect_uri' })
   }
 
   const clientId = process.env.GOOGLE_CLIENT_ID
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET
-  const redirectUri = process.env.GOOGLE_REDIRECT_URI
 
-  if (!clientId || !clientSecret || !redirectUri) {
+  if (!clientId || !clientSecret) {
     return res.status(500).json({ error: 'Server configuration error' })
   }
+
+  const redirectUri = redirect_uri
 
   const params = new URLSearchParams({
     client_id: clientId,
