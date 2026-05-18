@@ -14,26 +14,25 @@ interface Props {
 
 type SecondaryView = 'zone2' | 'morning' | 'evening'
 
+function resolveExistingView(s: WorkoutSession): SecondaryView {
+  if (s.sessionType === 'morning-free') return 'morning'
+  if (s.sessionType === 'evening-free') return 'evening'
+  return 'zone2'
+}
+
 export default function DayView({ schedule, date }: Props) {
   const sessions = getSessionsForDate(date)
   const primarySession = sessions.find((s) => s.sessionSlot === 'primary')
   const secondarySession = sessions.find((s) => s.sessionSlot === 'secondary')
 
+  const hasZone2 = schedule.secondarySession?.type === 'zone2'
+
+  const [secondaryView, setSecondaryView] = useState<SecondaryView>(() => {
+    if (secondarySession) return resolveExistingView(secondarySession)
+    return hasZone2 ? 'zone2' : 'morning'
+  })
+
   const { getMorning, getEvening } = useFreeExercises()
-  const [secondaryView, setSecondaryView] = useState<SecondaryView>(
-    schedule.secondarySession?.type === 'zone2' ? 'zone2' : 'morning',
-  )
-
-  const hasSecondarySlot = !!schedule.secondarySession
-  const secondaryViewForSession = (s: WorkoutSession): SecondaryView => {
-    if (s.sessionType === 'morning-free') return 'morning'
-    if (s.sessionType === 'evening-free') return 'evening'
-    return 'zone2'
-  }
-
-  const resolvedSecondaryView = secondarySession
-    ? secondaryViewForSession(secondarySession)
-    : secondaryView
 
   if (schedule.isRestDay) {
     return (
@@ -43,40 +42,16 @@ export default function DayView({ schedule, date }: Props) {
           <p className="rest-day-title">Rest Day</p>
           <p className="text-secondary">Recovery is part of the program.</p>
         </div>
-        <div className="free-session-section">
-          <div className="secondary-tabs">
-            <button
-              className={`secondary-tab${secondaryView === 'morning' ? ' active' : ''}`}
-              onClick={() => setSecondaryView('morning')}
-            >
-              Morning
-            </button>
-            <button
-              className={`secondary-tab${secondaryView === 'evening' ? ' active' : ''}`}
-              onClick={() => setSecondaryView('evening')}
-            >
-              Evening
-            </button>
-          </div>
-          {secondaryView === 'morning' && (
-            <FreeSession
-              exercises={getMorning()}
-              category="morning"
-              date={date}
-              dayName={schedule.dayName}
-              existingSession={secondarySession?.sessionType === 'morning-free' ? secondarySession : undefined}
-            />
-          )}
-          {secondaryView === 'evening' && (
-            <FreeSession
-              exercises={getEvening()}
-              category="evening"
-              date={date}
-              dayName={schedule.dayName}
-              existingSession={secondarySession?.sessionType === 'evening-free' ? secondarySession : undefined}
-            />
-          )}
-        </div>
+        <SecondarySection
+          view={secondaryView}
+          setView={setSecondaryView}
+          hasZone2={false}
+          date={date}
+          dayName={schedule.dayName}
+          secondarySession={secondarySession}
+          getMorning={getMorning}
+          getEvening={getEvening}
+        />
       </div>
     )
   }
@@ -93,50 +68,80 @@ export default function DayView({ schedule, date }: Props) {
         existingSession={primarySession}
       />
 
-      {hasSecondarySlot && (
-        <div className="secondary-session-section">
-          <div className="secondary-tabs">
-            <button
-              className={`secondary-tab${resolvedSecondaryView === 'zone2' ? ' active' : ''}`}
-              onClick={() => setSecondaryView('zone2')}
-            >
-              Zone 2
-            </button>
-            <button
-              className={`secondary-tab${resolvedSecondaryView === 'morning' ? ' active' : ''}`}
-              onClick={() => setSecondaryView('morning')}
-            >
-              Morning
-            </button>
-            <button
-              className={`secondary-tab${resolvedSecondaryView === 'evening' ? ' active' : ''}`}
-              onClick={() => setSecondaryView('evening')}
-            >
-              Evening
-            </button>
-          </div>
-
-          {resolvedSecondaryView === 'zone2' && <Zone2Card />}
-          {resolvedSecondaryView === 'morning' && (
-            <FreeSession
-              exercises={getMorning()}
-              category="morning"
-              date={date}
-              dayName={schedule.dayName}
-              existingSession={secondarySession?.sessionType === 'morning-free' ? secondarySession : undefined}
-            />
-          )}
-          {resolvedSecondaryView === 'evening' && (
-            <FreeSession
-              exercises={getEvening()}
-              category="evening"
-              date={date}
-              dayName={schedule.dayName}
-              existingSession={secondarySession?.sessionType === 'evening-free' ? secondarySession : undefined}
-            />
-          )}
-        </div>
-      )}
+      <div className="secondary-session-section">
+        <SecondarySection
+          view={secondaryView}
+          setView={setSecondaryView}
+          hasZone2={hasZone2}
+          date={date}
+          dayName={schedule.dayName}
+          secondarySession={secondarySession}
+          getMorning={getMorning}
+          getEvening={getEvening}
+        />
+      </div>
     </div>
+  )
+}
+
+interface SecondarySectionProps {
+  view: SecondaryView
+  setView: (v: SecondaryView) => void
+  hasZone2: boolean
+  date: string
+  dayName: DaySchedule['dayName']
+  secondarySession: WorkoutSession | undefined
+  getMorning: () => import('@/types').FreeExercise[]
+  getEvening: () => import('@/types').FreeExercise[]
+}
+
+function SecondarySection({
+  view, setView, hasZone2, date, dayName, secondarySession, getMorning, getEvening,
+}: SecondarySectionProps) {
+  return (
+    <>
+      <div className="secondary-tabs">
+        {hasZone2 && (
+          <button
+            className={`secondary-tab${view === 'zone2' ? ' active' : ''}`}
+            onClick={() => setView('zone2')}
+          >
+            Zone 2
+          </button>
+        )}
+        <button
+          className={`secondary-tab${view === 'morning' ? ' active' : ''}`}
+          onClick={() => setView('morning')}
+        >
+          Morning
+        </button>
+        <button
+          className={`secondary-tab${view === 'evening' ? ' active' : ''}`}
+          onClick={() => setView('evening')}
+        >
+          Evening
+        </button>
+      </div>
+
+      {view === 'zone2' && hasZone2 && <Zone2Card />}
+      {view === 'morning' && (
+        <FreeSession
+          exercises={getMorning()}
+          category="morning"
+          date={date}
+          dayName={dayName}
+          existingSession={secondarySession?.sessionType === 'morning-free' ? secondarySession : undefined}
+        />
+      )}
+      {view === 'evening' && (
+        <FreeSession
+          exercises={getEvening()}
+          category="evening"
+          date={date}
+          dayName={dayName}
+          existingSession={secondarySession?.sessionType === 'evening-free' ? secondarySession : undefined}
+        />
+      )}
+    </>
   )
 }
